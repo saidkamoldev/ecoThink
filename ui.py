@@ -97,10 +97,40 @@ class UI(Entity):
                 <yellow>QURILISH</yellow>
                 Tugmalar - Qurilma tanlash, O'ng tugma - Qurish
                 Chap tugma - Bekor qilish
+                
+                <yellow>QURILMALAR HAQIDA MA'LUMOT</yellow>
+                <green>🏠 Uy (1,200$)</green>
+                Energiya: -5, Suv: -3, Ifloslanish: +2
+                Foyda: Aholi uchun turar joy
+                
+                <red>🏭 Zavod (3,500$)</red>
+                Energiya: -20, Suv: -15, Ifloslanish: +25
+                Foyda: Iqtisodiy rivojlanish, lekin ifloslanish
+                
+                <green>🌳 Daraxt (200$)</green>
+                Suv: -2, Daraxtlar: +1, Ifloslanish: -3
+                Foyda: Ekologiyani yaxshilaydi, ifloslanishni kamaytiradi
+                
+                <yellow>☀️ Quyosh Paneli (1,800$)</yellow>
+                Energiya: +15, Ifloslanish: -1
+                Foyda: Toza energiya ishlab chiqaradi
+                
+                <blue>💧 Suv Minorasi (1,500$)</blue>
+                Energiya: -2, Suv: +30
+                Foyda: Suv ta'minotini oshiradi
+                
+                <yellow>EKOLOGIYA BALANSI</yellow>
+                Yuqori (85%+) - Yashil rang
+                Yaxshi (70-85%) - Och yashil
+                O'rtacha (50-70%) - Sariq
+                Past (30-50%) - To'q sariq
+                Xavfli (30% dan past) - Qizil
              ''').strip(),
             origin=(0,0),
             scale=1.2,
-            font='VeraMono.ttf'
+            font='VeraMono.ttf',
+            background=True,
+            background_color=color.black66
         )
         self.yordam_button.on_click = self.toggle_yordam
 
@@ -131,7 +161,9 @@ class UI(Entity):
     def ogohlantirishlarni_korsatish(self):
         """Ogohlantirishlarni ko'rsatish - darhol"""
         ogohlantirish = self.resurslar.oxirgi_ogohlantirishni_olish()
+        print(f"[DEBUG] Ogohlantirish olinmoqda: {ogohlantirish}")
         if ogohlantirish:
+            print(f"[DEBUG] Ogohlantirish ko'rsatilmoqda: {ogohlantirish}")
             # Rangni aniqlash
             if "🚨" in ogohlantirish or "⚠️" in ogohlantirish or "⚡" in ogohlantirish or "💧" in ogohlantirish:
                 rang = color.red
@@ -150,7 +182,9 @@ class UI(Entity):
             else:
                 rang = color.white
                 
-            self.show_message(ogohlantirish, rang, 5)  # 4 → 5 (uzunroq ko'rsatish)
+            self.show_message(ogohlantirish, rang, 10)  # 5 → 10 (uzunroq ko'rsatish)
+        else:
+            print(f"[DEBUG] Ogohlantirish yo'q, jami soni: {len(self.resurslar.ogohlantirishlar)}")
         
     def toggle_yordam(self):
         self.yordam_oynasi.enabled = not self.yordam_oynasi.enabled

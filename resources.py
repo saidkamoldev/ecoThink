@@ -2,7 +2,7 @@ from textwrap import dedent
 
 class Resurslar:
     def __init__(self):
-        self.pul = 5000
+        self.pul = 8000
         self.energiya = 100
         self.suv = 100
         self.daraxtlar = 10
@@ -37,32 +37,39 @@ class Resurslar:
         
     def bitta_xabar_berish(self, qurilma, eski_balans):
         """Faqat bitta xabar berish - ikkita emas"""
+        nom = qurilma['nom'].lower()
+        print(f"[DEBUG] Xabar berish: {qurilma['nom']} (lower: {nom})")
+        
         # Faqat asosiy xabar - boshqa xabarlar yo'q
-        if qurilma['nom'] == 'Zavod':
-            self.ogohlantirishlar.insert(0, f"🏭 Zavod qurildi! Ifloslanish +{qurilma['ifloslanish']}")
-            
-        elif qurilma['nom'] == 'Daraxt':
-            self.ogohlantirishlar.insert(0, f"🌳 Daraxt qurildi! Ekologiya yaxshilandi")
-            
-        elif qurilma['nom'] == 'Quyosh Paneli':
-            self.ogohlantirishlar.insert(0, f"☀️ Quyosh paneli qurildi! Energiya +{qurilma['energiya']}")
-            
-        elif qurilma['nom'] == 'Suv Minorasi':
-            self.ogohlantirishlar.insert(0, f"💧 Suv minorasi qurildi! Suv +{qurilma['suv']}")
-            
-        elif qurilma['nom'] == 'Uy':
-            self.ogohlantirishlar.insert(0, f"🏠 Uy qurildi! Energiya {qurilma['energiya']}, Suv {qurilma['suv']}")
+        if nom == 'zavod':
+            xabar = f"🏭 Zavod qurildi! Ifloslanish +{qurilma['ifloslanish']}"
+            self.ogohlantirishlar.insert(0, xabar)
+            print(f"[DEBUG] Zavod xabari qo'shildi: {xabar}")
+        elif nom == 'daraxt':
+            xabar = f"🌳 Daraxt qurildi! Ekologiya yaxshilandi"
+            self.ogohlantirishlar.insert(0, xabar)
+            print(f"[DEBUG] Daraxt xabari qo'shildi: {xabar}")
+        elif nom == 'quyosh paneli':
+            xabar = f"☀️ Quyosh paneli qurildi! Energiya +{qurilma['energiya']}"
+            self.ogohlantirishlar.insert(0, xabar)
+            print(f"[DEBUG] Quyosh paneli xabari qo'shildi: {xabar}")
+        elif nom == 'suv minorasi':
+            xabar = f"💧 Suv minorasi qurildi! Suv +{qurilma['suv']}"
+            self.ogohlantirishlar.insert(0, xabar)
+            print(f"[DEBUG] Suv minorasi xabari qo'shildi: {xabar}")
+        elif nom == 'uy':
+            xabar = f"🏠 Uy qurildi! Energiya {qurilma['energiya']}, Suv {qurilma['suv']}"
+            self.ogohlantirishlar.insert(0, xabar)
+            print(f"[DEBUG] Uy xabari qo'shildi: {xabar}")
+        print(f"[DEBUG] Jami ogohlantirishlar soni: {len(self.ogohlantirishlar)}")
         
         # Faqat juda muhim ogohlantirishlar
         if self.pul < 0:
             self.ogohlantirishlar.append("⚠️ Pul tugab qoldi!")
-            
         if self.energiya < 0:
             self.ogohlantirishlar.append("⚡ Energiya yetishmayapti!")
-            
         if self.suv < 0:
             self.ogohlantirishlar.append("💧 Suv yetishmayapti!")
-            
         if self.ekologiya_balansi < 20:
             self.ogohlantirishlar.append("🌍 Ekologiya balansi past!")
         
