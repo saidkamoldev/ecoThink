@@ -1,6 +1,6 @@
 from ursina import Ursina
 
-app = Ursina()
+app = Ursina(fullscreen=True)
 
 import game3d
 

@@ -10,8 +10,8 @@ class Resurslar:
     def update_text(self):
         return dedent(f'''
             Pul: {self.pul}$
-            Energiya: {self.energiya}%
-            Suv: {self.suv}%
+            Energiya: {self.energiya} MW
+            Suv: {self.suv} L
             Daraxtlar: {self.daraxtlar}
-            Ifloslanish: {self.ifloslanish}%
-        ''').strip() 
+            Ifloslanish: {self.ifloslanish}
+        ''').strip()
