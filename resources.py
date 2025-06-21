@@ -9,7 +9,6 @@ class Resurslar:
         self.ifloslanish = 0
     def update_text(self):
         return dedent(f'''
-            Pul: {self.pul}$
             Energiya: {self.energiya} MW
             Suv: {self.suv} L
             Daraxtlar: {self.daraxtlar}

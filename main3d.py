@@ -1,6 +1,13 @@
-from ursina import Ursina
+from ursina import Ursina, color
+from ursina.prefabs.first_person_controller import FirstPersonController
+from resources import Resurslar
+from ui import UI
+import random
 import sys
 import traceback
+
+# buildings3d.py dan funksiyalarni import qilish
+from buildings3d import create_house, create_factory, create_tree, create_solar_panel, create_water_tower
 
 def main():
     try:
