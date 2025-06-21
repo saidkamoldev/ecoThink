@@ -27,7 +27,6 @@ class UI(Entity):
             )
             b.text_entity.font = 'VeraMono.ttf'
 
-
         # Yordam oynasi
         self.yordam_button = Button(parent=self, text='?', position=window.bottom_right - Vec2(0.05, -0.05), scale=0.05, color=color.orange, text_origin=(0,0))
         self.yordam_oynasi = Entity(parent=camera.ui, model='quad', color=color.rgba(0,0,0,0.8), scale=(0.7, 0.6), enabled=False)
@@ -37,8 +36,7 @@ class UI(Entity):
                 <white>WASD</white> - Harakatlanish
                 <white>SPACE</white> - Sakrash
                 <white>ESC</white> - Kursor/Menyu
-                <white>O'ng tugma</white> - Bino qurish
-                <white>Chap tugma</white> - Qurilishni bekor qilish
+                <white>Bino tugmasi</white> - Avtomatik qurish
              ''').strip(),
              origin=(0,0),
              scale=1.2
@@ -66,7 +64,6 @@ class UI(Entity):
             self.ekologiya_bar.color = color.red
         
         self.ekologiya_bar.scale_x = ekologiya_foiz / 100
-
 
     def toggle_yordam(self):
         self.yordam_oynasi.enabled = not self.yordam_oynasi.enabled
