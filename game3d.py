@@ -111,16 +111,12 @@ def start_game():
                     
                     # Debug uchun UI qiymatlarini ko'rsatish
                     print(f"[DEBUG] UIdagi pul: {ui.resurslar.pul}, energiya: {ui.resurslar.energiya}, suv: {ui.resurslar.suv}")
-                    
-                    ui.show_message(f"{qurilma['nom']} random joylashuvda qurildi!", color.green)
                 except Exception as e:
                     print(f"[ERROR] Qurishda xatolik: {e}")
             else:
                 print("[LOG] Bo'sh joy topilmadi!")
-                ui.show_message("Bo'sh joy topilmadi!", color.red)
         else:
             print("[LOG] Yetarli pul yo'q!")
-            ui.show_message("Yetarli mablag' mavjud emas!", color.red)
 
     def qurish_mumkinmi(position):
         """Qurish mumkinligini tekshirish - kichiklashtirilgan maydon uchun"""

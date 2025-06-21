@@ -24,8 +24,8 @@ class Resurslar:
         self.daraxtlar += qurilma['daraxtlar']
         self.ifloslanish += qurilma['ifloslanish']
         
-        # Ekologiya balansini hisoblash
-        self.ekologiya_balansi = max(0, 100 - self.ifloslanish * 5 + self.daraxtlar * 2)
+        # Ekologiya balansini hisoblash - kuchaytirilgan formula
+        self.ekologiya_balansi = max(0, 100 - self.ifloslanish * 3 + self.daraxtlar * 3)  # 5, 2 → 3, 3
         
         print(f"[DEBUG] Qurishdan keyin: Pul={self.pul}, Energiya={self.energiya}, Suv={self.suv}, Daraxtlar={self.daraxtlar}, Ifloslanish={self.ifloslanish}, Ekologiya={self.ekologiya_balansi}")
         
@@ -50,11 +50,11 @@ class Resurslar:
             self.ogohlantirishlar.append("💧 Suv yetishmayapti! Suv tanqisligi!")
             
         # Ifloslanish juda ko'p bo'lsa
-        if self.ifloslanish > 20:
+        if self.ifloslanish > 15:  # 20 → 15 (tezroq ogohlantirish)
             self.ogohlantirishlar.append("🌫️ Ifloslanish juda ko'p! Atrof-muhit xavfi!")
             
         # Ekologiya balansi past bo'lsa
-        if self.ekologiya_balansi < 30:
+        if self.ekologiya_balansi < 40:  # 30 → 40 (tezroq ogohlantirish)
             self.ogohlantirishlar.append("🌍 Ekologiya balansi past! Tabiat xavfi!")
             
         # Ekologiya balansi yaxshilangsa
@@ -62,8 +62,16 @@ class Resurslar:
             self.ogohlantirishlar.append("✅ Ekologiya balansi yaxshilandi! Tabiat saqlanmoqda!")
             
         # Daraxtlar ko'payganda
-        if self.daraxtlar > 20:
+        if self.daraxtlar > 15:  # 20 → 15 (tezroq xabar)
             self.ogohlantirishlar.append("🌳 Daraxtlar ko'paydi! Yashil shahar!")
+            
+        # Zavod qurilganda maxsus ogohlantirish
+        if qurilma['nom'] == 'Zavod':
+            self.ogohlantirishlar.append("🏭 Zavod qurildi! Ifloslanish ko'paydi!")
+            
+        # Daraxt qurilganda maxsus xabar
+        if qurilma['nom'] == 'Daraxt':
+            self.ogohlantirishlar.append("🌳 Daraxt qurildi! Ekologiya yaxshilandi!")
             
     def resurslarni_cheklash(self):
         """Manfiy resurslarni 0 ga cheklash"""

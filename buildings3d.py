@@ -79,7 +79,7 @@ def create_solar_panel():
     try:
         panel_frame = Entity(
             model='models/solar_panels.obj', 
-            scale=(0.2, 0.2, 0.2), 
+            scale=(0.6, 0.6, 0.6),
             color=DARK_GRAY, 
             shader=lit_with_shadows_shader, 
             collider='box'
@@ -88,7 +88,7 @@ def create_solar_panel():
         # Agar model yuklanmasa, oddiy panel yaratish
         panel_frame = Entity(
             model='cube', 
-            scale=(1, 0.1, 1), 
+            scale=(3, 0.3, 3),
             color=DARK_GRAY, 
             shader=lit_with_shadows_shader, 
             collider='box'
@@ -135,18 +135,18 @@ qurilmalar = [
         'model_func': create_factory,
         'narx': 3500,
         'energiya': -20,
-        'suv': -10,
+        'suv': -15,
         'daraxtlar': 0,
-        'ifloslanish': 15
+        'ifloslanish': 25
     },
     {
         'nom': 'Daraxt',
         'model_func': create_tree,
         'narx': 200,
         'energiya': 0,
-        'suv': -1,
+        'suv': -2,
         'daraxtlar': 1,
-        'ifloslanish': -2
+        'ifloslanish': -3
     },
     {
         'nom': 'Quyosh Paneli',
@@ -162,7 +162,7 @@ qurilmalar = [
         'model_func': create_water_tower,
         'narx': 1500,
         'energiya': -2,
-        'suv': 25,
+        'suv': 30,
         'daraxtlar': 0,
         'ifloslanish': 0
     }
