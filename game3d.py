@@ -16,51 +16,51 @@ def start_game():
     preview_building = None
     selected_building = None
 
-    # O'yin maydonini yaratish
+    # O'yin maydonini yaratish - kichiklashtirilgan
     ground = Entity(
         model='plane',
-        scale=(100, 1, 100),
+        scale=(100, 1, 100),  # 200 → 100 (2 barobar kichik)
         color=color.rgba(0.7, 0.7, 0.4, 1),
         texture='white_cube',
-        texture_scale=(100, 100),
+        texture_scale=(100, 100),  # Texture ni ham kichiklashtirdik
         collider='box'
     )
     
-    # Devorlar
-    for x in [-50, 50]:
+    # Devorlar - kichiklashtirilgan
+    for x in [-50, 50]:  # -100, 100 → -50, 50
         wall = Entity(
             model='cube',
             color=color.rgba(1,1,1,0.2),
-            scale=(1,10,100),
-            position=(x,5,0),
+            scale=(1,15,100),  # Balandlikni o'rtacha qildik
+            position=(x,7.5,0),  # Balandlikni o'rtacha qildik
             collider='box'
         )
-    for z in [-50, 50]:
+    for z in [-50, 50]:  # -100, 100 → -50, 50
         wall = Entity(
             model='cube',
             color=color.rgba(1,1,1,0.2),
-            scale=(100,10,1),
-            position=(0,5,z),
+            scale=(100,15,1),  # Balandlikni o'rtacha qildik
+            position=(0,7.5,z),  # Balandlikni o'rtacha qildik
             collider='box'
         )
     
     floor = Entity(
         model='plane',
-        scale=(200,1,200),
+        scale=(200,1,200),  # 400 → 200
         y=-0.5,
         collider='box',
         visible=False
     )
 
     def random_joylashuv_topish():
-        """Random joylashuv topish algoritmi"""
-        max_urunishlar = 500
+        """Random joylashuv topish algoritmi - kichiklashtirilgan maydon uchun"""
+        max_urunishlar = 500  # Urunishlar sonini kamaytirdik
         urunish = 0
         
         while urunish < max_urunishlar:
-            # Random joylashuv
-            x = random.uniform(-45, 45)
-            z = random.uniform(-45, 45)
+            # Random joylashuv - kichiklashtirilgan maydon
+            x = random.uniform(-45, 45)  # -90, 90 → -45, 45
+            z = random.uniform(-45, 45)  # -90, 90 → -45, 45
             
             # Grid ga moslashtirish (3 birlik masofada)
             x = round(x / 3) * 3
@@ -73,9 +73,9 @@ def start_game():
             
             urunish += 1
         
-        # Agar random joy topilmasa, grid bo'ylab qidirish
-        for x in range(-45, 46, 3):
-            for z in range(-45, 46, 3):
+        # Agar random joy topilmasa, grid bo'ylab qidirish - kichiklashtirilgan
+        for x in range(-45, 46, 3):  # -90, 91 → -45, 46
+            for z in range(-45, 46, 3):  # -90, 91 → -45, 46
                 joylashuv = (x, z)
                 if joylashuv not in ishlatilgan_joylar:
                     return Vec3(x, 0, z)
@@ -129,13 +129,13 @@ def start_game():
             ui.show_message("Yetarli mablag' mavjud emas!", color.red)
 
     def qurish_mumkinmi(position):
-        """Qurish mumkinligini tekshirish"""
+        """Qurish mumkinligini tekshirish - kichiklashtirilgan maydon uchun"""
         # Grid ga moslashtirish (3 birlik masofada)
         x = round(position.x / 3) * 3
         z = round(position.z / 3) * 3
         
-        # Chegaradan tashqarida tekshirish
-        if abs(x) > 48 or abs(z) > 48:
+        # Chegaradan tashqarida tekshirish - kichiklashtirilgan
+        if abs(x) > 48 or abs(z) > 48:  # 98 → 48
             return False
         
         # Ishlatilgan joylarni tekshirish
@@ -145,9 +145,41 @@ def start_game():
         
         return True
 
+    def kamera_yordamchisi():
+        # Q va E tugmalari bilan aylanish - kuchaytirilgan
+        if held_keys['q']:
+            player.camera_pivot.rotate_y(-3)  # 2 → 3 (tezroq aylanish)
+        if held_keys['e']:
+            player.camera_pivot.rotate_y(3)   # 2 → 3 (tezroq aylanish)
+        
+        # R tugmasi bilan kamera pozitsiyasini tiklash
+        if held_keys['r']:
+            player.camera_pivot.rotation = (0, 0, 0)
+            player.position = (0, 2, -20)
+        
+        # F tugmasi bilan yuqoridan ko'rish - kuchaytirilgan
+        if held_keys['f']:
+            player.camera_pivot.rotation = (90, player.camera_pivot.rotation_y, 0)
+            player.y = 120  # 80 → 120 (kengroq ko'rish)
+        
+        # G tugmasi bilan juda yuqoridan ko'rish - kuchaytirilgan
+        if held_keys['g']:
+            player.camera_pivot.rotation = (90, player.camera_pivot.rotation_y, 0)
+            player.y = 200  # 150 → 200 (kengroq ko'rish)
+        
+        # T tugmasi bilan kamera balandligini oshirish
+        if held_keys['t']:
+            player.y += 1
+        # Y tugmasi bilan kamera balandligini kamaytirish
+        if held_keys['y']:
+            player.y -= 1
+
     def update():
         global building_mode, preview_building
         ui.update_ui()
+        
+        # Kamera yordamchisi
+        kamera_yordamchisi()
 
         if building_mode and preview_building:
             hit_info = mouse.hovered_entity
@@ -171,8 +203,8 @@ def start_game():
             # O'yinchi yer ostiga tushib qolsa
             if player.y < -10:
                 player.position = (0, 5, 0)
-            # O'yinchi chegaradan tashqariga chiqib ketsa
-            if abs(player.x) > 49 or abs(player.z) > 49:
+            # O'yinchi chegaradan tashqariga chiqib ketsa - kichiklashtirilgan
+            if abs(player.x) > 49 or abs(player.z) > 49:  # 99 → 49
                 player.x = clamp(player.x, -49, 49)
                 player.z = clamp(player.z, -49, 49)
 
@@ -253,21 +285,32 @@ def start_game():
         if building_mode and key == 'left mouse down':
             bekor_qilish()
 
-    # O'yinchi yaratish
+    # O'yinchi yaratish - yaxshilangan kamera boshqaruvi
     player = FirstPersonController(
         position=(0, 2, -20),
-        speed=8,
-        jump_height=2,
+        speed=15,  # Tezlikni oshirdik
+        jump_height=4,  # Sakrash balandligini oshirdik
         gravity=0.8,
-        mouse_sensitivity=Vec2(40, 40)
+        mouse_sensitivity=Vec2(100, 100),  # Mouse sezgirligini kuchaytirdik
+        rotation_speed=300,  # Aylanish tezligini oshirdik
+        max_zoom=60,  # Zoom chegarasini oshirdik
+        min_zoom=1,  # Minimal zoom ni kamaytirdik
+        zoom_speed=4,  # Zoom tezligini oshirdik
+        field_of_view=110  # Ko'rish maydonini kengaytirdik
     )
     player.collider = 'box'
+    
+    # Kamera cheklovlarini olib tashlash - to'liq 360 gradus
+    player.camera_pivot.rotation_speed = 300
+    player.camera_pivot.max_rotation_x = 180  # Yuqori cheklovni oshirdik
+    player.camera_pivot.min_rotation_x = -180  # Pastki cheklovni oshirdik
+    
     ground.name = 'ground'
 
-    # Yorug'lik va osmon
+    # Yorug'lik va osmon - kichiklashtirilgan
     pivot = Entity()
-    DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, -45, 0))
-    AmbientLight(color=color.rgba(100, 100, 100, 0.1))
+    DirectionalLight(parent=pivot, y=3, z=3, shadows=True, rotation=(45, -45, 0))  # Yorug'likni kamaytirdik
+    AmbientLight(color=color.rgba(120, 120, 120, 0.15))  # Ambient yorug'likni kamaytirdik
     Sky()
 
     # UI yaratish
