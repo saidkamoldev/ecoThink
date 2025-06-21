@@ -108,36 +108,49 @@ class UI(Entity):
         self.pul_text.text = f"PUL: {self.resurslar.pul:,}$"
         self.resurslar_text.text = self.resurslar.update_text()
 
-        # Ekologiya balansini yangilash
+        # Ekologiya balansini yangilash - darhol
         ekologiya_foiz = self.resurslar.ekologiya_balansi
         self.ekologiya_foiz.text = f"{ekologiya_foiz:.0f}%"
         self.ekologiya_bar.scale_x = ekologiya_foiz / 100 * 0.3 # Parent scale'ga moslash
         
-        if ekologiya_foiz > 70: 
+        # Ekologiya balansi rangini yangilash - darhol
+        if ekologiya_foiz > 85: 
             self.ekologiya_bar.color = color.green
-        elif ekologiya_foiz > 30: 
+        elif ekologiya_foiz > 70: 
+            self.ekologiya_bar.color = color.lime
+        elif ekologiya_foiz > 50: 
             self.ekologiya_bar.color = color.yellow
+        elif ekologiya_foiz > 30: 
+            self.ekologiya_bar.color = color.orange
         else: 
             self.ekologiya_bar.color = color.red
         
-        # Ogohlantirishlarni tekshirish
+        # Ogohlantirishlarni tekshirish - darhol
         self.ogohlantirishlarni_korsatish()
         
     def ogohlantirishlarni_korsatish(self):
-        """Ogohlantirishlarni ko'rsatish"""
+        """Ogohlantirishlarni ko'rsatish - darhol"""
         ogohlantirish = self.resurslar.oxirgi_ogohlantirishni_olish()
         if ogohlantirish:
             # Rangni aniqlash
-            if "⚠️" in ogohlantirish or "⚡" in ogohlantirish or "💧" in ogohlantirish:
+            if "🚨" in ogohlantirish or "⚠️" in ogohlantirish or "⚡" in ogohlantirish or "💧" in ogohlantirish:
                 rang = color.red
             elif "🌫️" in ogohlantirish or "🌍" in ogohlantirish:
                 rang = color.orange
-            elif "✅" in ogohlantirish or "🌳" in ogohlantirish:
+            elif "✅" in ogohlantirish or "🌳" in ogohlantirish or "🌿" in ogohlantirish or "🌱" in ogohlantirish:
                 rang = color.green
+            elif "🏭" in ogohlantirish:
+                rang = color.red
+            elif "☀️" in ogohlantirish:
+                rang = color.yellow
+            elif "💧" in ogohlantirish:
+                rang = color.blue
+            elif "🏠" in ogohlantirish:
+                rang = color.white
             else:
                 rang = color.white
                 
-            self.show_message(ogohlantirish, rang, 4)
+            self.show_message(ogohlantirish, rang, 5)  # 4 → 5 (uzunroq ko'rsatish)
         
     def toggle_yordam(self):
         self.yordam_oynasi.enabled = not self.yordam_oynasi.enabled

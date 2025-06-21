@@ -106,17 +106,22 @@ def start_game():
                     # Resurslarni yangilash - yangi tizim
                     resurslar.resurs_qoshish(qurilma)
                     
-                    # UI yangilashini majburiy qilish
+                    # UI yangilashini majburiy qilish - bir necha marta
                     ui.update_ui()
+                    ui.update_ui()  # Ikki marta yangilash
                     
                     # Debug uchun UI qiymatlarini ko'rsatish
                     print(f"[DEBUG] UIdagi pul: {ui.resurslar.pul}, energiya: {ui.resurslar.energiya}, suv: {ui.resurslar.suv}")
+                    print(f"[DEBUG] UIdagi ekologiya balansi: {ui.resurslar.ekologiya_balansi}%")
+                    
                 except Exception as e:
                     print(f"[ERROR] Qurishda xatolik: {e}")
             else:
                 print("[LOG] Bo'sh joy topilmadi!")
+                ui.show_message("Bo'sh joy topilmadi!", color.red)
         else:
             print("[LOG] Yetarli pul yo'q!")
+            ui.show_message(f"Yetarli mablag' mavjud emas! Kerak: {qurilma['narx']:,}$, Mavjud: {resurslar.pul:,}$", color.red)
 
     def qurish_mumkinmi(position):
         """Qurish mumkinligini tekshirish - kichiklashtirilgan maydon uchun"""

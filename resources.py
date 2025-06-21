@@ -24,55 +24,48 @@ class Resurslar:
         self.daraxtlar += qurilma['daraxtlar']
         self.ifloslanish += qurilma['ifloslanish']
         
-        # Ekologiya balansini hisoblash - kuchaytirilgan formula
-        self.ekologiya_balansi = max(0, 100 - self.ifloslanish * 3 + self.daraxtlar * 3)  # 5, 2 → 3, 3
+        # Ekologiya balansini hisoblash - 100% dan o'tmasin
+        self.ekologiya_balansi = max(0, min(100, 100 - self.ifloslanish * 4 + self.daraxtlar * 6))
         
         print(f"[DEBUG] Qurishdan keyin: Pul={self.pul}, Energiya={self.energiya}, Suv={self.suv}, Daraxtlar={self.daraxtlar}, Ifloslanish={self.ifloslanish}, Ekologiya={self.ekologiya_balansi}")
         
-        # Ogohlantirishlarni tekshirish
-        self.ogohlantirishlarni_tekshirish(qurilma, eski_balans)
+        # Faqat bitta xabar berish
+        self.bitta_xabar_berish(qurilma, eski_balans)
         
         # Manfiy resurslarni cheklash
         self.resurslarni_cheklash()
         
-    def ogohlantirishlarni_tekshirish(self, qurilma, eski_balans):
-        """Ogohlantirishlarni tekshirish va qo'shish"""
-        # Pul tugab qolsa
-        if self.pul < 0:
-            self.ogohlantirishlar.append("⚠️ Pul tugab qoldi! Iqtisodiy inqiroz!")
-            
-        # Energiya tugab qolsa
-        if self.energiya < 0:
-            self.ogohlantirishlar.append("⚡ Energiya yetishmayapti! Elektr uzilishi!")
-            
-        # Suv tugab qolsa
-        if self.suv < 0:
-            self.ogohlantirishlar.append("💧 Suv yetishmayapti! Suv tanqisligi!")
-            
-        # Ifloslanish juda ko'p bo'lsa
-        if self.ifloslanish > 15:  # 20 → 15 (tezroq ogohlantirish)
-            self.ogohlantirishlar.append("🌫️ Ifloslanish juda ko'p! Atrof-muhit xavfi!")
-            
-        # Ekologiya balansi past bo'lsa
-        if self.ekologiya_balansi < 40:  # 30 → 40 (tezroq ogohlantirish)
-            self.ogohlantirishlar.append("🌍 Ekologiya balansi past! Tabiat xavfi!")
-            
-        # Ekologiya balansi yaxshilangsa
-        if self.ekologiya_balansi > eski_balans and self.ekologiya_balansi > 70:
-            self.ogohlantirishlar.append("✅ Ekologiya balansi yaxshilandi! Tabiat saqlanmoqda!")
-            
-        # Daraxtlar ko'payganda
-        if self.daraxtlar > 15:  # 20 → 15 (tezroq xabar)
-            self.ogohlantirishlar.append("🌳 Daraxtlar ko'paydi! Yashil shahar!")
-            
-        # Zavod qurilganda maxsus ogohlantirish
+    def bitta_xabar_berish(self, qurilma, eski_balans):
+        """Faqat bitta xabar berish - ikkita emas"""
+        # Faqat asosiy xabar - boshqa xabarlar yo'q
         if qurilma['nom'] == 'Zavod':
-            self.ogohlantirishlar.append("🏭 Zavod qurildi! Ifloslanish ko'paydi!")
+            self.ogohlantirishlar.insert(0, f"🏭 Zavod qurildi! Ifloslanish +{qurilma['ifloslanish']}")
             
-        # Daraxt qurilganda maxsus xabar
-        if qurilma['nom'] == 'Daraxt':
-            self.ogohlantirishlar.append("🌳 Daraxt qurildi! Ekologiya yaxshilandi!")
+        elif qurilma['nom'] == 'Daraxt':
+            self.ogohlantirishlar.insert(0, f"🌳 Daraxt qurildi! Ekologiya yaxshilandi")
             
+        elif qurilma['nom'] == 'Quyosh Paneli':
+            self.ogohlantirishlar.insert(0, f"☀️ Quyosh paneli qurildi! Energiya +{qurilma['energiya']}")
+            
+        elif qurilma['nom'] == 'Suv Minorasi':
+            self.ogohlantirishlar.insert(0, f"💧 Suv minorasi qurildi! Suv +{qurilma['suv']}")
+            
+        elif qurilma['nom'] == 'Uy':
+            self.ogohlantirishlar.insert(0, f"🏠 Uy qurildi! Energiya {qurilma['energiya']}, Suv {qurilma['suv']}")
+        
+        # Faqat juda muhim ogohlantirishlar
+        if self.pul < 0:
+            self.ogohlantirishlar.append("⚠️ Pul tugab qoldi!")
+            
+        if self.energiya < 0:
+            self.ogohlantirishlar.append("⚡ Energiya yetishmayapti!")
+            
+        if self.suv < 0:
+            self.ogohlantirishlar.append("💧 Suv yetishmayapti!")
+            
+        if self.ekologiya_balansi < 20:
+            self.ogohlantirishlar.append("🌍 Ekologiya balansi past!")
+        
     def resurslarni_cheklash(self):
         """Manfiy resurslarni 0 ga cheklash"""
         self.energiya = max(0, self.energiya)
