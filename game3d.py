@@ -73,7 +73,7 @@ def start_game():
         for obj in obyektlar:
             if hasattr(obj, 'position'):
                 distance = (position - obj.position).length()
-                if distance < 5:
+                if distance < 0.4:
                     print("[LOG] Bu yerda boshqa bino bor!")
                     return False
         return True
@@ -86,7 +86,7 @@ def start_game():
             hit_info = mouse.hovered_entity
             if hit_info and hit_info.name == 'ground':
                 pos = mouse.world_point
-                preview_building.position = Vec3(round(pos.x), 0, round(pos.z))
+                preview_building.position = Vec3(int(pos.x * 2) / 2, 0, int(pos.z * 2) / 2)
                 if qurish_mumkinmi(preview_building.position):
                     preview_building.color = TRANSPARENT
                 else:
@@ -125,17 +125,34 @@ def start_game():
         if building_mode and key == 'right mouse down':
             if preview_building and qurish_mumkinmi(preview_building.position):
                 try:
-                    new_building = selected_building['model_func']()
-                    new_building.position = preview_building.position
+                    # Grid joylashuv hisoblash
+                    n = len(obyektlar)
+                    N = 8  # har bir qator uchun obyektlar soni
+                    step = 2  # obyektlar orasidagi masofa
+                    x = (n % N) * step - (N//2)*step
+                    z = (n // N) * step - (N//2)*step
+                    # selected_building atributlarini vaqtinchalik saqlab olaman
+                    model_func = selected_building['model_func']
+                    nom = selected_building['nom']
+                    narx = selected_building['narx']
+                    energiya = selected_building['energiya']
+                    suv = selected_building['suv']
+                    daraxtlar = selected_building['daraxtlar']
+                    ifloslanish = selected_building['ifloslanish']
+                    new_building = model_func()
+                    new_building.position = Vec3(x, 0, z)
                     obyektlar.append(new_building)
-                    print(f"[LOG] Yangi {selected_building['nom']} qurildi: {new_building.position}")
-                    resurslar.pul -= selected_building['narx']
-                    resurslar.energiya += selected_building['energiya']
-                    resurslar.suv += selected_building['suv']
-                    resurslar.daraxtlar += selected_building['daraxtlar']
-                    resurslar.ifloslanish += selected_building['ifloslanish']
-                    
-                    # Qurilish tugagandan so'ng kursorni yashirish va boshqaruvni tiklash
+                    print(f"[LOG] Yangi {nom} qurildi: {new_building.position}")
+                    resurslar.pul -= narx
+                    resurslar.energiya += energiya
+                    resurslar.suv += suv
+                    resurslar.daraxtlar += daraxtlar
+                    resurslar.ifloslanish += ifloslanish
+                    # Agar pul qolmasa, qurilish rejimini to'xtatish
+                    if resurslar.pul < narx:
+                        bekor_qilish()
+                        return
+                    # Qurilishdan keyin preview va selected ni tozalash
                     mouse.locked = True
                     mouse.visible = False
                     building_mode = False
@@ -143,11 +160,6 @@ def start_game():
                         destroy(preview_building)
                     preview_building = None
                     selected_building = None
-                    
-                    # Agar pul qolmasa, qurilish rejimini to'xtatish
-                    if resurslar.pul < selected_building['narx']:
-                        bekor_qilish()
-
                 except Exception as e:
                     print(f"[ERROR] Qurilishda xatolik: {e}")
         
