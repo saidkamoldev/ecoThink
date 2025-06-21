@@ -93,8 +93,10 @@ def start_game():
                     preview_building.color = color.rgba(1, 0, 0, 0.5)
 
         if hasattr(player, 'position'):
+            # O'yinchi yer ostiga tushib qolsa
             if player.y < -10:
                 player.position = (0, 5, 0)
+            # O'yinchi chegaradan tashqariga chiqib ketsa
             if abs(player.x) > 49 or abs(player.z) > 49:
                 player.x = clamp(player.x, -49, 49)
                 player.z = clamp(player.z, -49, 49)
@@ -132,6 +134,15 @@ def start_game():
                     resurslar.suv += selected_building['suv']
                     resurslar.daraxtlar += selected_building['daraxtlar']
                     resurslar.ifloslanish += selected_building['ifloslanish']
+                    
+                    # Qurilish tugagandan so'ng kursorni yashirish va boshqaruvni tiklash
+                    mouse.locked = True
+                    mouse.visible = False
+                    building_mode = False
+                    if preview_building:
+                        destroy(preview_building)
+                    preview_building = None
+                    selected_building = None
                     
                     # Agar pul qolmasa, qurilish rejimini to'xtatish
                     if resurslar.pul < selected_building['narx']:

@@ -36,10 +36,10 @@ def create_factory():
     smoke = Entity(parent=chimney, model='sphere', color=color.smoke, scale=0.01, y=0.6)
     def update_smoke():
         smoke.y += time.dt * 0.2
-        smoke.scale += time.dt * 0.3
+        smoke.scale = Vec3(smoke.scale.x + time.dt * 0.3, smoke.scale.y + time.dt * 0.3, smoke.scale.z + time.dt * 0.3)
         if smoke.y > 1.5:
             smoke.y = 0.6
-            smoke.scale = 0.01
+            smoke.scale = Vec3(0.01, 0.01, 0.01)
     smoke.update = update_smoke
 
     # Kichik bino
