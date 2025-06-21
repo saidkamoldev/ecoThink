@@ -11,6 +11,7 @@ class UI(Entity):
         self.resurslar = resurslar
         self.qurilmalar = qurilmalar
         self.qurish_func = qurish_func
+        self.ogohlantirish_text = None  # Yangi: ogohlantirish matni
 
         # 1. YUQORI PANEL (Pul va Ekologiya)
         # Aniq va oddiy, faqat matn va fon bilan
@@ -93,6 +94,9 @@ class UI(Entity):
                 Mouse - Kamera aylanishi, Q/E - Burilish
                 R - Tiklash, F/G - Yuqoridan ko'rish
                 T/Y - Balandlikni o'zgartirish
+                <yellow>QURILISH</yellow>
+                Tugmalar - Qurilma tanlash, O'ng tugma - Qurish
+                Chap tugma - Bekor qilish
              ''').strip(),
             origin=(0,0),
             scale=1.2,
@@ -104,13 +108,36 @@ class UI(Entity):
         self.pul_text.text = f"PUL: {self.resurslar.pul:,}$"
         self.resurslar_text.text = self.resurslar.update_text()
 
-        ekologiya_foiz = max(0, 100 - self.resurslar.ifloslanish * 5 + self.resurslar.daraxtlar * 2)
+        # Ekologiya balansini yangilash
+        ekologiya_foiz = self.resurslar.ekologiya_balansi
         self.ekologiya_foiz.text = f"{ekologiya_foiz:.0f}%"
         self.ekologiya_bar.scale_x = ekologiya_foiz / 100 * 0.3 # Parent scale'ga moslash
         
-        if ekologiya_foiz > 70: self.ekologiya_bar.color = color.green
-        elif ekologiya_foiz > 30: self.ekologiya_bar.color = color.yellow
-        else: self.ekologiya_bar.color = color.red
+        if ekologiya_foiz > 70: 
+            self.ekologiya_bar.color = color.green
+        elif ekologiya_foiz > 30: 
+            self.ekologiya_bar.color = color.yellow
+        else: 
+            self.ekologiya_bar.color = color.red
+        
+        # Ogohlantirishlarni tekshirish
+        self.ogohlantirishlarni_korsatish()
+        
+    def ogohlantirishlarni_korsatish(self):
+        """Ogohlantirishlarni ko'rsatish"""
+        ogohlantirish = self.resurslar.oxirgi_ogohlantirishni_olish()
+        if ogohlantirish:
+            # Rangni aniqlash
+            if "⚠️" in ogohlantirish or "⚡" in ogohlantirish or "💧" in ogohlantirish:
+                rang = color.red
+            elif "🌫️" in ogohlantirish or "🌍" in ogohlantirish:
+                rang = color.orange
+            elif "✅" in ogohlantirish or "🌳" in ogohlantirish:
+                rang = color.green
+            else:
+                rang = color.white
+                
+            self.show_message(ogohlantirish, rang, 4)
         
     def toggle_yordam(self):
         self.yordam_oynasi.enabled = not self.yordam_oynasi.enabled

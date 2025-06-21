@@ -1,6 +1,7 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from ursina.shaders import lit_with_shadows_shader
+from ursina import held_keys
 from resources import Resurslar
 from buildings3d import qurilmalar
 from ui import UI
@@ -89,17 +90,8 @@ def start_game():
             joylashuv = random_joylashuv_topish()
             if joylashuv:
                 try:
-                    # selected_building atributlarini olish
-                    model_func = qurilma['model_func']
-                    nom = qurilma['nom']
-                    narx = qurilma['narx']
-                    energiya = qurilma['energiya']
-                    suv = qurilma['suv']
-                    daraxtlar = qurilma['daraxtlar']
-                    ifloslanish = qurilma['ifloslanish']
-                    
                     # Yangi obyekt yaratish
-                    new_building = model_func()
+                    new_building = qurilma['model_func']()
                     new_building.position = joylashuv
                     
                     # Ishlatilgan joyni saqlash
@@ -107,18 +99,20 @@ def start_game():
                     ishlatilgan_joylar.add(joylashuv_tuple)
                     obyektlar.append(new_building)
                     
-                    print(f"[LOG] Yangi {nom} random joylashuvda qurildi: {new_building.position}")
+                    print(f"[LOG] Yangi {qurilma['nom']} random joylashuvda qurildi: {new_building.position}")
                     print(f"[DEBUG] Grid joylashuv: ({joylashuv.x}, {joylashuv.z})")
                     print(f"[DEBUG] Ishlatilgan joylar soni: {len(ishlatilgan_joylar)}")
                     
-                    # Resurslarni yangilash
-                    resurslar.pul -= narx
-                    resurslar.energiya += energiya
-                    resurslar.suv += suv
-                    resurslar.daraxtlar += daraxtlar
-                    resurslar.ifloslanish += ifloslanish
+                    # Resurslarni yangilash - yangi tizim
+                    resurslar.resurs_qoshish(qurilma)
                     
-                    ui.show_message(f"{nom} random joylashuvda qurildi!", color.green)
+                    # UI yangilashini majburiy qilish
+                    ui.update_ui()
+                    
+                    # Debug uchun UI qiymatlarini ko'rsatish
+                    print(f"[DEBUG] UIdagi pul: {ui.resurslar.pul}, energiya: {ui.resurslar.energiya}, suv: {ui.resurslar.suv}")
+                    
+                    ui.show_message(f"{qurilma['nom']} random joylashuvda qurildi!", color.green)
                 except Exception as e:
                     print(f"[ERROR] Qurishda xatolik: {e}")
             else:
@@ -147,31 +141,31 @@ def start_game():
 
     def kamera_yordamchisi():
         # Q va E tugmalari bilan aylanish - kuchaytirilgan
-        if held_keys['q']:
+        if held_keys.get('q', False):
             player.camera_pivot.rotate_y(-3)  # 2 → 3 (tezroq aylanish)
-        if held_keys['e']:
+        if held_keys.get('e', False):
             player.camera_pivot.rotate_y(3)   # 2 → 3 (tezroq aylanish)
         
         # R tugmasi bilan kamera pozitsiyasini tiklash
-        if held_keys['r']:
+        if held_keys.get('r', False):
             player.camera_pivot.rotation = (0, 0, 0)
             player.position = (0, 2, -20)
         
         # F tugmasi bilan yuqoridan ko'rish - kuchaytirilgan
-        if held_keys['f']:
+        if held_keys.get('f', False):
             player.camera_pivot.rotation = (90, player.camera_pivot.rotation_y, 0)
             player.y = 120  # 80 → 120 (kengroq ko'rish)
         
         # G tugmasi bilan juda yuqoridan ko'rish - kuchaytirilgan
-        if held_keys['g']:
+        if held_keys.get('g', False):
             player.camera_pivot.rotation = (90, player.camera_pivot.rotation_y, 0)
             player.y = 200  # 150 → 200 (kengroq ko'rish)
         
         # T tugmasi bilan kamera balandligini oshirish
-        if held_keys['t']:
+        if held_keys.get('t', False):
             player.y += 1
         # Y tugmasi bilan kamera balandligini kamaytirish
-        if held_keys['y']:
+        if held_keys.get('y', False):
             player.y -= 1
 
     def update():
@@ -180,24 +174,6 @@ def start_game():
         
         # Kamera yordamchisi
         kamera_yordamchisi()
-
-        if building_mode and preview_building:
-            hit_info = mouse.hovered_entity
-            if hit_info and hit_info.name == 'ground':
-                pos = mouse.world_point
-                # Grid ga moslashtirish (3 birlik masofada)
-                x = round(pos.x / 3) * 3
-                z = round(pos.z / 3) * 3
-                preview_building.position = Vec3(x, 0, z)
-                preview_building.visible = True
-                
-                if qurish_mumkinmi(preview_building.position):
-                    preview_building.color = TRANSPARENT
-                else:
-                    preview_building.color = color.rgba(1, 0, 0, 0.5)
-            else:
-                # Agar kursor ground ustida bo'lmasa, preview_building ni ko'rsatmaslik
-                preview_building.visible = False
 
         if hasattr(player, 'position'):
             # O'yinchi yer ostiga tushib qolsa
@@ -223,67 +199,8 @@ def start_game():
         global building_mode, preview_building, selected_building
         
         if key == 'escape':
-            if building_mode:
-                bekor_qilish()
-            else:
-                mouse.locked = not mouse.locked
-                mouse.visible = not mouse.visible
-
-        # O'ng tugma bilan qurish
-        if building_mode and key == 'right mouse down':
-            if preview_building and preview_building.visible and qurish_mumkinmi(preview_building.position) and selected_building:
-                try:
-                    joylashuv = preview_building.position
-                    # Grid ga moslashtirish (3 birlik masofada)
-                    x = round(joylashuv.x / 3) * 3
-                    z = round(joylashuv.z / 3) * 3
-                    joylashuv_tuple = (x, z)
-                    
-                    # Agar bu joy ishlatilmagan bo'lsa
-                    if joylashuv_tuple not in ishlatilgan_joylar:
-                        # selected_building atributlarini olish
-                        model_func = selected_building['model_func']
-                        nom = selected_building['nom']
-                        narx = selected_building['narx']
-                        energiya = selected_building['energiya']
-                        suv = selected_building['suv']
-                        daraxtlar = selected_building['daraxtlar']
-                        ifloslanish = selected_building['ifloslanish']
-                        
-                        # Yangi obyekt yaratish
-                        new_building = model_func()
-                        new_building.position = Vec3(x, 0, z)
-                        
-                        # Ishlatilgan joyni saqlash
-                        ishlatilgan_joylar.add(joylashuv_tuple)
-                        obyektlar.append(new_building)
-                        
-                        print(f"[LOG] Yangi {nom} qurildi: {new_building.position}")
-                        print(f"[DEBUG] Grid joylashuv: ({x}, {z})")
-                        print(f"[DEBUG] Ishlatilgan joylar soni: {len(ishlatilgan_joylar)}")
-                        
-                        # Resurslarni yangilash
-                        resurslar.pul -= narx
-                        resurslar.energiya += energiya
-                        resurslar.suv += suv
-                        resurslar.daraxtlar += daraxtlar
-                        resurslar.ifloslanish += ifloslanish
-                        
-                        # Qurilishdan keyin preview ni yo'q qilish va rejimdan chiqish
-                        bekor_qilish()
-                    else:
-                        print("[LOG] Bu joyda allaqachon obyekt bor!")
-                        ui.show_message("Bu joyda allaqachon obyekt bor!", color.red)
-                except Exception as e:
-                    print(f"[ERROR] Qurilishda xatolik: {e}")
-            else:
-                # Agar qurish mumkin bo'lmasa, xabar berish
-                if preview_building and not qurish_mumkinmi(preview_building.position):
-                    ui.show_message("Bu joyga qurib bo'lmaydi!", color.red)
-        
-        # Chap tugma bilan bekor qilish
-        if building_mode and key == 'left mouse down':
-            bekor_qilish()
+            mouse.locked = not mouse.locked
+            mouse.visible = not mouse.visible
 
     # O'yinchi yaratish - yaxshilangan kamera boshqaruvi
     player = FirstPersonController(
@@ -296,12 +213,12 @@ def start_game():
         max_zoom=60,  # Zoom chegarasini oshirdik
         min_zoom=1,  # Minimal zoom ni kamaytirdik
         zoom_speed=4,  # Zoom tezligini oshirdik
-        field_of_view=110  # Ko'rish maydonini kengaytirdik
+        field_of_view=130  # Ko'rish maydonini kengaytirdik
     )
     player.collider = 'box'
     
     # Kamera cheklovlarini olib tashlash - to'liq 360 gradus
-    player.camera_pivot.rotation_speed = 300
+    player.camera_pivot.rotation_speed = 400
     player.camera_pivot.max_rotation_x = 180  # Yuqori cheklovni oshirdik
     player.camera_pivot.min_rotation_x = -180  # Pastki cheklovni oshirdik
     
